@@ -10,8 +10,9 @@ function lanciaDado() {
             const dieStuck = Math.floor(Math.random() * (5 - 1 + 1) + 1);
             if (dieStuck !== 3) {
                 resolve(face)
-            } else
+            } else {
                 reject('The die fell on the floor...')
+            }
         }, 3000)
     });
     return lancio;
@@ -31,7 +32,42 @@ lanciaDado()
 
 // Modifica la funzione in creaLanciaDado(), che restituisce una closure che memorizza l'ultimo risultato. Se il numero esce due volte di fila, stampa "Incredibile!".
 
+function creaLanciaDado() {
+    let lastRes = null;
+
+    return function () {
+        return new Promise((resolve, reject) => {
+            console.log('The die is rolling...');
+            setTimeout(() => {
+                const face = Math.floor(Math.random() * (6 - 1 + 1) + 1);
+                const dieStuck = Math.floor(Math.random() * (5 - 1 + 1) + 1);
+                if (dieStuck !== 3) {
+                    if (face === lastRes) {
+                        console.log('Incredibile!')
+                    }
+                    lastRes = face
+                    resolve(face)
+                } else {
+                    lastRes = null;
+                    reject('The die fell on the floor...')
+                }
+
+            }, 3000)
+        });
+    }
+}
 
 
+const lancio = creaLanciaDado()
+
+lancio()
+    .then(result => {
+        console.log(result)
+        lancio()
+            .then(result => console.log(result))
+            .catch(error => console.error(error));
+    },
+    )
+    .catch(error => console.error(error));
 
 
